@@ -43,7 +43,7 @@
 <tr>
 <td>{{ $Mahasiswa->Nim }}</td>
 <td>{{ $Mahasiswa->Nama }}</td>
-<td>{{ $Mahasiswa->Kelas }}</td>
+<td>{{ $Mahasiswa->kelas->nama_kelas }}</td>
 <td>{{ $Mahasiswa->Jurusan }}</td>
 <td>{{ $Mahasiswa->No_Handphone }}</td>
 <td>{{ $Mahasiswa->Email }}</td>

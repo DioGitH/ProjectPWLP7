@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
+use App\Models\Kelas;
 
 class MahasiswaController extends Controller
 {
@@ -37,7 +38,8 @@ class MahasiswaController extends Controller
      */
     public function create()
     {
-        return view('mahasiswas.create');
+        $kelas = Kelas::all();
+        return view('mahasiswas.create',['kelas' => $kelas]);
     }
 
     /**
@@ -58,7 +60,21 @@ class MahasiswaController extends Controller
             'Tanggal_Lahir' => 'required',
         ]);
 
-        Mahasiswa::create($request->all());
+        $mahasiswas = new Mahasiswa;
+        $mahasiswas->Nim = $request->get('Nim');
+        $mahasiswas->Nama = $request->get('Nama');
+        $mahasiswas->Jurusan = $request->get('Jurusan');
+        $mahasiswas->No_Handphone = $request->get('No_Handphone');
+        $mahasiswas->Email = $request->get('Email');
+        $mahasiswas->Tanggal_Lahir = $request->get('Tanggal_Lahir');
+
+        $kelas = new Kelas;
+        $kelas->id = $request->get('Kelas');
+
+        $mahasiswas->kelas()->associate($kelas);
+        $mahasiswas->save();
+
+        // Mahasiswa::create($mahasiswas->all());
 
         return redirect()->route('mahasiswas.index')->with('success', 'Mahasiswa Berhasil Ditambahkan');
     }
@@ -84,7 +100,8 @@ class MahasiswaController extends Controller
     public function edit($Nim)
     {
         $Mahasiswa = Mahasiswa::find($Nim);
-        return view('mahasiswas.edit', compact('Mahasiswa'));
+        $Kelas = Kelas::all();
+        return view('mahasiswas.edit', ['kelas' => $Kelas], compact('Mahasiswa'));
     }
 
     /**
@@ -106,7 +123,23 @@ class MahasiswaController extends Controller
             'Tanggal_Lahir' => 'required',
         ]);
 
-        Mahasiswa::find($Nim)->update($request->all());
+        $mahasiswas = Mahasiswa::with('kelas')->where('nim', $Nim)->first();
+        $mahasiswas->Nim = $request->get('Nim');
+        $mahasiswas->Nama = $request->get('Nama');
+        $mahasiswas->Jurusan = $request->get('Jurusan');
+        $mahasiswas->No_Handphone = $request->get('No_Handphone');
+        $mahasiswas->Email = $request->get('Email');
+        $mahasiswas->Tanggal_Lahir = $request->get('Tanggal_Lahir');
+
+        $kelas = new Kelas;
+        $kelas->id = $request->get('Kelas');
+
+        $mahasiswas->kelas()->associate($kelas);
+        $mahasiswas->save();
+        
+
+
+        // Mahasiswa::find($Nim)->update($request->all());
 
         return redirect()->route('mahasiswas.index')->with('success', 'Mahasiswa Berhasil Diupdate');
     }
