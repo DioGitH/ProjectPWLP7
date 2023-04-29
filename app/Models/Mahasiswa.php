@@ -9,7 +9,7 @@ class Mahasiswa extends Model
 {
     use HasFactory;
 
-    protected $table='mahasiswas';
+    protected $table= 'mahasiswas';
     public $timestamps= false;
     protected $primaryKey= 'Nim';
 
@@ -25,5 +25,10 @@ class Mahasiswa extends Model
 
     public function kelas(){
         return $this->belongsTo(Kelas::class);
+    }
+
+    public function mataKuliah()
+    {
+        return $this->belongsToMany(MataKuliah::class)->withPivot('nilai');
     }
 }
