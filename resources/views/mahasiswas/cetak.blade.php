@@ -35,10 +35,6 @@ JURUSAN TEKNOLOGI INFORMASI-POLITEKNIK NEGERI MALANG
   </tbody>
   
 </table>
-<a class="btn btn-warning mt-10" href="{{ route('mahasiswa.cetak', ['Nim' => $Mahasiswa->Nim]) }}">Cetak PDF</a>
 </div>
-<center>
-  <a class="btn btn-success mt-3" href="{{ route('mahasiswas.index') }}">Kembali</a>
-</center>
 </div>
 @endsection

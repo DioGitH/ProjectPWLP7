@@ -14,6 +14,7 @@ Detail Mahasiswa
 <li class="list-group-item"><b>No_Handphone: </b>{{$Mahasiswa->No_Handphone}}</li>
 <li class="list-group-item"><b>Email: </b>{{$Mahasiswa->Email}}</li>
 <li class="list-group-item"><b>Tanggal Lahir: </b>{{$Mahasiswa->Tanggal_Lahir}}</li>
+<li class="list-group-item"><b>Foto Mahasiswa: </b><img width="100px" src="{{asset('storage/'.$Mahasiswa->Foto_Mhs)}}"></li>
 
 </ul>
 </div>

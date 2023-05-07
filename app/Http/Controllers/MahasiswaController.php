@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 use App\Models\Kelas;
+use App\Models\Mahasiswa_Matakuliah;
+use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\PDF;
 
 class MahasiswaController extends Controller
 {
@@ -58,6 +61,7 @@ class MahasiswaController extends Controller
             'No_Handphone' => 'required',
             'Email' => 'required',
             'Tanggal_Lahir' => 'required',
+            'Foto_Mhs' => 'required',
         ]);
 
         $mahasiswas = new Mahasiswa;
@@ -67,6 +71,10 @@ class MahasiswaController extends Controller
         $mahasiswas->No_Handphone = $request->get('No_Handphone');
         $mahasiswas->Email = $request->get('Email');
         $mahasiswas->Tanggal_Lahir = $request->get('Tanggal_Lahir');
+        if($request->file('Foto_Mhs')){
+            $image = $request->file('Foto_Mhs')->store('images', 'public');
+        }
+        $mahasiswas->Foto_Mhs = $image;
 
         $kelas = new Kelas;
         $kelas->id = $request->get('Kelas');
@@ -121,6 +129,7 @@ class MahasiswaController extends Controller
             'No_Handphone' => 'required',
             'Email' => 'required',
             'Tanggal_Lahir' => 'required',
+            'Foto_Mhs' => 'required',
         ]);
 
         $mahasiswas = Mahasiswa::with('kelas')->where('nim', $Nim)->first();
@@ -130,6 +139,12 @@ class MahasiswaController extends Controller
         $mahasiswas->No_Handphone = $request->get('No_Handphone');
         $mahasiswas->Email = $request->get('Email');
         $mahasiswas->Tanggal_Lahir = $request->get('Tanggal_Lahir');
+
+        if ($mahasiswas->Foto_Mhs && file_exists(storage_path('app/public/' . $mahasiswas->Foto_Mhs))) {
+            Storage::delete('public/' . $mahasiswas->Foto_Mhs);
+        }
+        $image = $request->file('Foto_Mhs')->store('images', 'public');
+        $mahasiswas->Foto_Mhs = $image;
 
         $kelas = new Kelas;
         $kelas->id = $request->get('Kelas');
@@ -152,12 +167,26 @@ class MahasiswaController extends Controller
      */
     public function destroy($Nim)
     {
-        Mahasiswa::find($Nim)->delete();
+        $mhs = Mahasiswa::find($Nim);
+        if ($mhs->Foto_Mhs && file_exists(storage_path('app/public/' . $mhs->Foto_Mhs))) {
+            Storage::delete('public/' . $mhs->Foto_Mhs);
+        }
+        $mhs->mataKuliah()->detach();
+        $mhs->delete();
+        
+
+        
         return redirect()->route('mahasiswas.index')->with('success','Mahasiswa Berhasil Dihapus');
     }
 
     public function nilai($Nim){
         $Mahasiswa = Mahasiswa::find($Nim);
         return view('mahasiswas.nilai', compact('Mahasiswa'));
+    }
+
+    public function cetak($Nim){
+        $Mahasiswa = Mahasiswa::find($Nim);
+        $pdf = PDF::loadView('mahasiswas.cetak', ['Mahasiswa'=> $Mahasiswa]);
+        return $pdf->stream();
     }
 }
